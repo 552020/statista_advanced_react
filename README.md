@@ -1,3 +1,48 @@
+# statista_advanced_react
+
+## Tan Query
+
+```ts
+import React, { useState, useEffect } from "react";
+
+const fetchData = async () => {
+  // This function represents the queryFn in useQuery
+  const response = await fetch("https://api.example.com/data");
+  const data = await response.json();
+  return data;
+};
+
+function ExampleComponent() {
+  // useQuery internally uses a few states like these to track the status of the query.
+  // These lines of code replace the "status" return value from useQuery.
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // The useEffect hook replaces useQuery here, handling the fetching and state setting.
+  useEffect(() => {
+    setLoading(true);
+    fetchData()
+      .then((responseData) => {
+        setData(responseData); // This replaces the "data" return value from useQuery.
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err); // This replaces the "error" return value from useQuery.
+        setLoading(false);
+      });
+  }, []); // Empty dependency array means this effect runs once, similar to a useQuery without dependencies.
+
+  // Handling the display based on the state of the query replaces the different status checks that you'd do with useQuery.
+  if (loading) return "Loading...";
+  if (error) return "An error occurred";
+
+  return <div>{JSON.stringify(data)}</div>; // Displaying the data, once fetched and set.
+}
+```
+
+## Next.js README
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
