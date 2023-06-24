@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useFavorites } from "@/hooks/useFavorites";
 
 export type Item = {
   identifier: number;
@@ -60,6 +61,8 @@ export default function Home() {
   const [isRealApi, setIsRealApi] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const [page, setPage] = useState(0);
+  const { favorites, addFavorite } = useFavorites();
+
   const { isLoading, isError, data, error, isFetching, isPreviousData } = useQuery(
     ["statistics", searchTerm, isRealApi, page],
     () => fetchData(searchTerm, isRealApi, page),
@@ -112,6 +115,14 @@ export default function Home() {
                   {item.title}
                 </Link>
                 <p>{item.description}</p>
+                <button
+                  onClick={() => addFavorite(item)}
+                  disabled={
+                    favorites ? favorites.some((favorite: Item) => favorite.identifier === item.identifier) : false
+                  }
+                >
+                  Add to Favorites
+                </button>
               </div>
             ))}
           {isSubmit && data && data.length > 0 && (

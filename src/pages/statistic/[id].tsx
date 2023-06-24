@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { QueryData, Item } from "../index";
 
-const StatisticItem: React.FC<{ item: Item }> = ({ item }) => {
+export const StatisticItem: React.FC<{ item: Item }> = ({ item }) => {
   const imageOnError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.src = item.teaser_image_urls.reduce((prev, curr) => (prev.width > curr.width ? prev : curr)).src;
   };
