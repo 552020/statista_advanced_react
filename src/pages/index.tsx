@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-async function fetchData(searchTerm: string, isRealApi: boolean) {
+async function fetchData(searchTerm: string, isRealApi: boolean, page: number) {
   try {
     let res;
     if (isRealApi) {
@@ -23,7 +23,10 @@ async function fetchData(searchTerm: string, isRealApi: boolean) {
 
     let data = await res.json();
     if (!isRealApi) {
-      data = searchTerm.toLowerCase() === "statista" ? data.items : [];
+      const resultsPerPage = 10;
+      const start = page * resultsPerPage;
+      const end = start + resultsPerPage;
+      data = searchTerm.toLowerCase() === "statista" ? data.items.slice(start, end) : [];
     } else {
       data = data.items || [];
     }
@@ -39,10 +42,11 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isRealApi, setIsRealApi] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
-  const { isLoading, isError, data, error } = useQuery(
-    ["statistics", searchTerm, isRealApi],
-    () => fetchData(searchTerm, isRealApi),
-    { enabled: isSubmit }
+  const [page, setPage] = useState(0);
+  const { isLoading, isError, data, error, isFetching, isPreviousData } = useQuery(
+    ["statistics", searchTerm, isRealApi, page],
+    () => fetchData(searchTerm, isRealApi, page),
+    { enabled: isSubmit, keepPreviousData: true }
   );
 
   const onSubmit = (event: React.FormEvent) => {
@@ -84,6 +88,29 @@ export default function Home() {
               {result.title}
             </div>
           ))}
+        <div className="mt-4">
+          <button
+            type="button"
+            disabled={page === 0}
+            onClick={() => setPage(page - 1)}
+            className="mr-2 p-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+          >
+            Previous Page
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (!isPreviousData) {
+                setPage(page + 1);
+              }
+            }}
+            disabled={isPreviousData || isFetching}
+            className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+          >
+            Next Page
+          </button>
+          {isFetching ? <span>Loading...</span> : null}
+        </div>
       </form>
     </div>
   );
