@@ -95,10 +95,10 @@ export default function Home() {
             Submit
           </button>
 
-          {isLoading && <div>Loading...</div>}
+          {isSubmit && isLoading && <div>Loading...</div>}
           {isError && (
             <div>
-              <span>isError-</span> <span>Error: {(error as Error).message}</span>
+              <span>Error: {(error as Error).message}</span>
             </div>
           )}
 
@@ -114,29 +114,31 @@ export default function Home() {
                 <p>{item.description}</p>
               </div>
             ))}
-          <div className="mt-4">
-            <button
-              type="button"
-              disabled={page === 0}
-              onClick={() => setPage(page - 1)}
-              className="mr-2 p-2 text-white bg-blue-500 rounded hover:bg-blue-600"
-            >
-              Previous Page
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!isPreviousData) {
-                  setPage(page + 1);
-                }
-              }}
-              disabled={isPreviousData || isFetching}
-              className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600"
-            >
-              Next Page
-            </button>
-            {isFetching ? <span>Loading...</span> : null}
-          </div>
+          {isSubmit && data && data.length > 0 && (
+            <div className="mt-4">
+              <button
+                type="button"
+                disabled={page === 0}
+                onClick={() => setPage(page - 1)}
+                className="mr-2 p-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+              >
+                Previous Page
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isPreviousData) {
+                    setPage(page + 1);
+                  }
+                }}
+                disabled={isPreviousData || isFetching}
+                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+              >
+                Next Page
+              </button>
+              {isFetching ? <span>Loading...</span> : null}
+            </div>
+          )}
         </form>
       </div>
     </div>
